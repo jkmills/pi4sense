@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sense Hat Web Interface</title>
+    <script src="//code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="//cdn.socket.io/socket.io-1.2.0.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        h1 { margin-top: 0; }
+    </style>
+</head>
+<body>
+    <h1>Sense Hat Web Interface</h1>
+    <p>Temperature: <span id="temperature">Loading...</span></p>
+    <p>Humidity: <span id="humidity">Loading...</span></p>
+    <p>Pressure: <span id="pressure">Loading...</span></p>
+    <p>Roll: <span id="roll">Loading...</span></p>
+    <p>Pitch: <span id="pitch">Loading...</span></p>
+    <p>Yaw: <span id="yaw">Loading...</span></p>
+    <p>Date and Time: <span id="datetime">Loading...</span></p>
+    <p><a href="#" id="led-toggle">Toggle LED Matrix</a></p>
+
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('connect', function() {
+            console.log('Socket connected');
+        });
+
+        socket.on('disconnect', function() {
+            console.log('Socket disconnected');
+        });
+
+        socket.on('sensor-data', function(data) {
+            $('#temperature').text(data.temperature + ' °C');
+            $('#humidity').text(data.humidity + ' %');
+            $('#pressure').text(data.pressure + ' hPa');
+            $('#roll').text(data.roll + ' °');
+            $('#pitch').text(data.pitch + ' °');
+            $('#yaw').text(data.yaw + ' °');
+            $('#datetime').text(data.datetime);
+        });
+
+        $('#led-toggle').click(function() {
+            socket.emit('toggle-led');
+        });
+    </script>
+</body>
+</html>
