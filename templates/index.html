@@ -8,6 +8,16 @@
         body { font-family: Arial, sans-serif; }
         h1 { margin-top: 0; }
     </style>
+    <style>
+        #orientation {
+          margin-top: 30px;
+        }
+        canvas {
+          display: block;
+          margin: auto;
+          border: 1px solid black;
+        }
+      </style>
 </head>
 <body>
     <h1>Sense Hat Web Interface</h1>
@@ -45,5 +55,8 @@
             socket.emit('toggle-led');
         });
     </script>
+    <div id="orientation">
+        <canvas id="canvas" width="128" height="128"></canvas>
+      </div>
 </body>
 </html>
