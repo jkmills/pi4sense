@@ -1,13 +1,14 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
-from sense_hat import SenseHat, ACTION_PRESSED, ACTION_HELD, ACTION_RELEASED
+from datetime import datetime
+from sense_hat import SenseHat
 from threading import Thread, Lock
 from time import sleep
-from datetime import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode='threading', transports=['polling'])
+
 sense = SenseHat()
 
 # Define colors for the orientation indicators
@@ -58,6 +59,10 @@ orientation_thread = Thread(target=draw_orientation)
 orientation_thread.daemon = True
 orientation_thread.start()
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 def read_sensor_data():
     while True:
         data = {
@@ -80,17 +85,8 @@ def read_sensor_data():
 
         sleep(1)
 
-sensor_thread = Thread(target=read_sensor_data)
-sensor_thread.daemon = True
-sensor_thread.start()
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@socketio.on('toggle-led')
-def toggle_led():
-    sense.clear() if sense.get_pixels()[0][0] == (0, 0, 0) else sense.clear((255, 255, 255))
-
 if __name__ == '__main__':
+    sensor_thread = Thread(target=read_sensor_data)
+    sensor_thread.daemon = True
+    sensor_thread.start()
     socketio.run(app, host='0.0.0.0', port=5000)
