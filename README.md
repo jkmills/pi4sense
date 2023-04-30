@@ -6,3 +6,4 @@ sudo apt-get upgrade
 sudo apt-get install sense-hat
 
 sudo pip3 install flask
+sudo pip3 install flask-socketio
